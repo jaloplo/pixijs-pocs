@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>PixiJS - Rotate PoC</title>
+    </head>
+    <body>
+        <script src="/js/pixi.min.js"></script>
+        <script>
+            let app = new PIXI.Application({width: 400, height: 300, backgroundColor: '0x000000'});
+            document.body.appendChild(app.view);
+
+            let tileMap = [
+                [5, 1, 1, 0, 1, 1, 6],
+                [3, 0, 0, 0, 0, 0, 4],
+                [3, 0, 0, 0, 0, 0, 4],
+                [0, 0, 0, 0, 0, 0, 0],
+                [3, 0, 0, 0, 0, 0, 4],
+                [3, 0, 0, 0, 0, 0, 4],
+                [7, 2, 2, 0, 2, 2, 8],
+            ];
+
+            PIXI.loader
+                .add({name: 'atlas', url: '/assets/atlas.rotate.json' })
+                .load(function() {
+                    const width = 32;
+                    const height = 32;
+
+                    let atlas = PIXI.loader.resources['atlas'];
+
+                    let background = new PIXI.Container();
+
+                    for(let i = 0; i < app.screen.width / 16; i++) {
+                        for(let j = 0; j < app.screen.height / 16; j++) {
+                            let b = new PIXI.Sprite(atlas.textures['background']);
+                            b.x = i * 16;
+                            b.y = j * 16;
+                            background.addChild(b);
+                        }
+                    }
+
+                    app.stage.addChild(background);
+
+                    let initialX = 0; //width * 2;
+                    let initialY = 0; //height * 2;
+                    let tile = null;
+
+                    let tileContainer = new PIXI.Container();
+
+                    for(let i = 0; i < tileMap.length; i++) {
+                        for(let j = 0; j < tileMap[i].length; j++) {
+                            switch(tileMap[i][j]) {
+                                case 0: 
+                                    break;
+                                case 1: 
+                                    tile = new PIXI.Sprite(atlas.textures['bottom']);
+                                    break;
+                                case 2:
+                                    tile = new PIXI.Sprite(atlas.textures['top']);
+                                    break;
+                                case 3: 
+                                    tile = new PIXI.Sprite(atlas.textures['right']);
+                                    break;
+                                case 4: 
+                                    tile = new PIXI.Sprite(atlas.textures['left']);
+                                    break;
+                                case 5: 
+                                    tile = new PIXI.Sprite(atlas.textures['bottom.right']);
+                                    break;
+                                case 6: 
+                                    tile = new PIXI.Sprite(atlas.textures['bottom.left']);
+                                    break;
+                                case 7: 
+                                    tile = new PIXI.Sprite(atlas.textures['top.right']);
+                                    break;
+                                case 8: 
+                                    tile = new PIXI.Sprite(atlas.textures['top.left']);
+                                    break;
+                            }
+
+                            if(null !== tile) {
+                                tileContainer.addChild(tile);
+                                tile.x = initialX + width * j;
+                                tile.y = initialY + height * i;
+                                tile = null;
+                            }
+                        }
+                    }
+                    
+                    app.stage.addChild(tileContainer);
+                    tileContainer.pivot.x = tileContainer.width / 2;
+                    tileContainer.pivot.y = tileContainer.height / 2;
+                    tileContainer.x = app.screen.width / 2;
+                    tileContainer.y = app.screen.height / 2;
+
+                    app.ticker.add(function(delta) {
+                        tileContainer.rotation += 0.01 * delta;
+                    });
+                });
+        </script>
+    </body>
+</html>
