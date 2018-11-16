@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>PixiJS - Sprites-Atlas PoC</title>
+    </head>
+    <body>
+        <script src="/js/pixi.min.js"></script>
+        <script>
+            let app = new PIXI.Application({width: 400, height: 300, backgroundColor: '0x000000'});
+            document.body.appendChild(app.view);
+
+            let tileMap = [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1],
+                [0, 0, 0, 0, 0, 0, 0, 3, 1, 2, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 3, 1, 2, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 3, 1, 2, 0, 0, 0, 3, 1, 1, 1, 1],
+                [0, 3, 1, 2, 0, 0, 0, 0, 3, 2, 0, 0, 0, 0],
+                [1, 2, 0, 0, 0, 0, 0, 3, 2, 0, 0, 0, 0, 0],
+            ];
+
+            PIXI.loader.add({
+                name: 'atlas', 
+                url: '/assets/atlas.json', 
+                onComplete: function() { 
+                    console.log('resource loaded.'); 
+                }
+            })
+            .load(function() {
+
+                let atlas = PIXI.loader.resources['atlas'];
+
+                const width = 16;
+                const height = 16;
+                let initialX = width * 4;
+                let initialY = height * 4;
+                let tile = null;
+
+                for(let i = 0; i < tileMap.length; i++) {
+                    for(let j = 0; j < tileMap[i].length; j++) {
+                        switch(tileMap[i][j]) {
+                            case 0: 
+                                break;
+                            case 1: 
+                                tile = new PIXI.Sprite(atlas.textures['board']);
+                                break;
+                            case 2:
+                                tile = new PIXI.Sprite(atlas.textures['up']);
+                                break;
+                            case 3: 
+                                tile = new PIXI.Sprite(atlas.textures['flat']);
+                                break;
+                        }
+
+                        if(null !== tile) {
+                            app.stage.addChild(tile);
+                            tile.x = initialX + width * j;
+                            tile.y = initialY + height * i;
+                            tile = null;
+                        }
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>
