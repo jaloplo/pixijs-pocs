@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>PixiJS - Collision PoC</title>
+        <style>
+            div { display: inline; }
+        </style>
+    </head>
+    <body>
+        <script src="/js/pixi.min.js"></script>
+        <script src="/js/matter.min.js"></script>
+        <script src="/js/matter.render.js"></script>
+        <script src="/js/render.pixi.js"></script>
+        <script src="/js/matter.pixi.sprite.js"></script>
+        <script src="/js/matter.pixi.sprite.constraint.js"></script>
+        <script src="/js/keyboard.js"></script>
+        <script src="/js/keyboardConstraint.js"></script>
+        <div id="game"></div>
+        <div id="physics"></div>
+        <script>
+            function createTileGroup() {
+                const horizontalBoxes = tileMap[0].length;
+                const verticalBoxes = tileMap.length;
+                const initialX = (render.options.width / 2) - (horizontalBoxes-1) * (width/2);
+                const initialY = (render.options.height / 2) - (verticalBoxes-1) * (height/2);
+
+                let tileGroup = Matter.Composite.create();
+
+                for(let i = 0; i < tileMap.length; i++) {
+                    for(let j = 0; j < tileMap[i].length; j++) {
+                        if(tileMap[i][j] !== 0) {
+                            let texture = '';
+                            switch(tileMap[i][j]) {
+                                    case 0: 
+                                        break;
+                                    case 1: 
+                                        texture = 'bottom';
+                                        break;
+                                    case 2:
+                                        texture = 'top';
+                                        break;
+                                    case 3: 
+                                        texture = 'right';
+                                        break;
+                                    case 4: 
+                                        texture = 'left';
+                                        break;
+                                    case 5: 
+                                        texture = 'bottom.right';
+                                        break;
+                                    case 6: 
+                                        texture = 'bottom.left';
+                                        break;
+                                    case 7: 
+                                        texture = 'top.right';
+                                        break;
+                                    case 8: 
+                                        texture = 'top.left';
+                                        break;
+                                }
+
+                            let body = Matter.Bodies.rectangle(
+                                initialX + (j * width), 
+                                initialY + (i * height), 
+                                width, 
+                                height, { 
+                                    isStatic: true,
+                                });
+
+                            let sprite = Sprite.create(body, pixiRender.app, { resource: 'atlas', texture: texture});
+                            let spriteConstraint = SpriteConstraint.create(engine, sprite, {});
+                            Matter.World.add(engine.world, spriteConstraint);
+
+                            Matter.Composite.add(tileGroup, body);
+                        }
+                    }
+                }
+
+                Matter.World.add(engine.world, tileGroup);
+
+                return tileGroup;
+            }
+
+
+            let engine = Matter.Engine.create();
+            engine.world.gravity.y = 1;
+
+
+            var render = RenderMatter.create({
+                element: document.getElementById('physics'),
+                engine: engine,
+                options: {
+                    width: 400,
+                    height: 300,
+                    showAngleIndicator: false,
+                }
+            });
+
+            RenderMatter.run(render);
+
+            var pixiRender = RenderPixi.create({
+                engine: engine,
+                width: 400,
+                height: 300,
+                target: document.getElementById('game'),
+            });
+
+
+            let tileMap = [
+                [5, 1, 1, 0, 0, 1, 1, 6],
+                [3, 0, 0, 0, 0, 0, 0, 4],
+                [3, 0, 0, 0, 0, 0, 0, 4],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+                [3, 0, 0, 0, 0, 0, 0, 4],
+                [3, 0, 0, 0, 0, 0, 0, 4],
+                [7, 2, 2, 0, 0, 2, 2, 8],
+            ];
+            // let tileMap = [
+            //     [0,0,0,1,0,0,0]
+            // ];
+
+            const width = 32;
+            const height = 32;
+
+            // wall
+            Matter.World.add(engine.world, Matter.Bodies.rectangle(0, 299, 800, 1, { isStatic: true }));
+            Matter.World.add(engine.world, Matter.Bodies.rectangle(0, 0, 800, 1, { isStatic: true }));
+            Matter.World.add(engine.world, Matter.Bodies.rectangle(0, 0, 1, 600, { isStatic: true }));
+            Matter.World.add(engine.world, Matter.Bodies.rectangle(399, 0, 1, 600, { isStatic: true }));
+
+            RenderPixi.add(pixiRender, [
+                {name: 'atlas', url: '/assets/atlas.rotate.json' },
+                {name: 'player', url: '/assets/sprite_1.png' },
+            ]);
+
+            Matter.Events.on(pixiRender, 'afterLoaded', function(res) {
+                let tileGroup = createTileGroup();
+
+                // pivot point for rotating
+                let bounds = Matter.Composite.bounds(tileGroup);
+                let pivot = {
+                    x: bounds.min.x + (bounds.max.x - bounds.min.x) / 2,
+                    y: bounds.min.y + (bounds.max.y - bounds.min.y) / 2
+                };
+
+                let runner = Matter.Runner.create();
+                Matter.Runner.start(runner, engine);
+                Matter.Events.on(runner, 'beforeTick', function() {
+                    Matter.Composite.rotate(tileGroup, 0.005, pivot);
+                });
+
+                // player
+                let player = Matter.Bodies.rectangle(150, 150, width, height, {
+                    label: 'player',
+                    inertia: Infinity
+                });
+                Matter.World.add(engine.world, player);
+
+                let sprite = Sprite.create(player, pixiRender.app, { resource: 'player' });
+                let spriteConstraint = SpriteConstraint.create(engine, sprite, {});
+                Matter.World.add(engine.world, spriteConstraint);
+
+                RenderPixi.run(pixiRender);
+                
+                // mouse control
+                let mouse = Matter.Mouse.create(pixiRender.canvas);
+                let mouseConstraint = Matter.MouseConstraint.create(engine, {
+                    mouse: mouse,
+                    constraint: {
+                        stiffness: 0.2,
+                        render: {
+                            visible: true,
+                        }
+                    },
+                });
+
+                Matter.World.add(engine.world, mouseConstraint);
+
+                let keyboard = Keyboard.create(engine, document.body);
+                let keyboardConstraint = KeyboardConstraint.create(keyboard, player);
+            });
+        </script>
+    </body>
+</html>

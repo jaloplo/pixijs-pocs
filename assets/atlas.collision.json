@@ -1,0 +1,76 @@
+{
+	"frames": {
+		"background": {
+			"frame": {"x": 32, "y": 48, "w":16, "h":16},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":16,"h":16},
+			"sourceSize": {"w":16,"h":16}
+		},
+		"top": {
+			"frame": {"x": 208, "y": 256, "w":32, "h":32},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+			"sourceSize": {"w":32,"h":32}
+		},
+		"bottom": {
+			"frame": {"x": 208, "y": 192, "w":32, "h":32},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+			"sourceSize": {"w":32,"h":32}
+		},
+		"left": {
+			"frame": {"x": 240, "y": 224, "w":32, "h":32},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+			"sourceSize": {"w":32,"h":32}
+		},
+		"right": {
+			"frame": {"x": 176, "y": 224, "w":32, "h":32},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+			"sourceSize": {"w":32,"h":32}
+		},
+		"bottom.right": {
+			"frame": {"x": 176, "y": 192, "w":32, "h":32},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+			"sourceSize": {"w":32,"h":32}
+		},
+		"bottom.left": {
+			"frame": {"x": 240, "y": 192, "w":32, "h":32},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+			"sourceSize": {"w":32,"h":32}
+		},
+		"top.right": {
+			"frame": {"x": 176, "y": 256, "w":32, "h":32},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+			"sourceSize": {"w":32,"h":32}
+		},
+		"top.left": {
+			"frame": {"x": 240, "y": 256, "w":32, "h":32},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+			"sourceSize": {"w":32,"h":32}
+		}
+	},
+	"meta": {
+		"image": "atlas.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 624,
+			"h": 304
+		},
+		"scale": "1"
+	}
+}
